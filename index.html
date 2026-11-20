@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f5fbf">
+<meta name="description" content="지자체·유관기관의 주요이슈, 단체장 동향, 지원정책 기사를 모아 봅니다.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="지역동향">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>지역 동향 모니터</title>
+<style>
+:root{
+  --bg:#f3f4f6; --card:#fff; --ink:#191c20; --sub:#646d78; --line:#e3e6ea;
+  --brand:#1f5fbf; --brand-soft:#e8f0fc; --new:#d9480f; --chip:#eceff3; --bar:#ffffffee;
+  --c-issues:#1f5fbf; --c-leader:#7a3fbf; --c-policy:#1c8a5a;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root{ --bg:#111418; --card:#1c2026; --ink:#e8eaed; --sub:#9aa3ad; --line:#2b3138;
+    --brand:#6ea2f0; --brand-soft:#1d2a3d; --new:#ff8a4c; --chip:#262b32; --bar:#1c2026ee;
+    --c-issues:#6ea2f0; --c-leader:#b68cf0; --c-policy:#5cc993; }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:15px;line-height:1.5;
+  padding-bottom:calc(70px + var(--sb));overscroll-behavior-y:contain}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+
+.appbar{position:sticky;top:0;z-index:10;background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);padding:calc(8px + var(--st)) 16px 10px}
+.row1{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.logo{font-weight:800;font-size:17px;flex:1;display:flex;align-items:center;gap:6px;cursor:pointer}
+.logo img{width:24px;height:24px;border-radius:6px}
+.ibtn{border:none;background:none;width:38px;height:38px;border-radius:10px;font-size:18px;display:grid;place-items:center}
+.ibtn:active{background:var(--chip)}
+.search{display:flex;gap:6px}
+.search input{flex:1;min-width:0;height:44px;padding:0 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);font-size:16px}
+.search button{height:44px;padding:0 16px;border:none;border-radius:12px;background:var(--brand);color:#fff;font-weight:700}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:8px -16px 0;padding:0 16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:5px 12px;font-size:13px;white-space:nowrap}
+.chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:700}
+.chip.ghost{border-color:transparent;background:var(--chip)}
+.chip .x{margin-left:6px;opacity:.5}
+.lbl{flex:none;font-size:12px;color:var(--sub);align-self:center;margin-left:4px}
+
+main{padding:12px 16px 20px;max-width:1180px;margin:0 auto}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.sum .org{grid-column:1/-1;display:flex;align-items:center;gap:8px}
+.sum .org b{font-size:20px;flex:1}
+.star{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:4px 10px;font-size:13px}
+.sum small{display:block;color:var(--sub);font-size:12px}
+.sum strong{font-size:17px}
+.stbadge{display:inline-block;font-size:11px;font-weight:700;color:var(--new);border:1px solid var(--new);border-radius:6px;padding:0 5px;vertical-align:2px}
+.sec{font-size:13px;font-weight:700;color:var(--sub);margin:16px 2px 8px}
+.kws{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px 2px}
+.kws::-webkit-scrollbar{display:none}
+.kw{flex:none;border:1px solid transparent;background:var(--chip);border-radius:99px;padding:6px 12px;font-size:13.5px}
+.kw i{font-style:normal;color:var(--sub);font-size:11px;margin-left:3px}
+.kw.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand);font-weight:700}
+.note{background:var(--brand-soft);border-radius:10px;padding:9px 12px;font-size:13px;margin-bottom:10px}
+.note.warn{background:#fff4e5;color:#8a4b00}
+@media (prefers-color-scheme: dark){ .note.warn{background:#3a2a12;color:#ffcf8a} }
+.note a{color:inherit;font-weight:700}
+
+.cathead{display:flex;align-items:center;gap:8px;margin:16px 2px 8px}
+.cathead h2{font-size:16px;margin:0;flex:1;padding-left:8px;border-left:4px solid var(--tc)}
+.cathead span{font-size:12px;color:var(--sub)}
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:inherit;text-decoration:none}
+.item:active{background:var(--chip)}
+.item .t{font-weight:600;font-size:15px;line-height:1.45}
+.item .m{display:flex;gap:6px;font-size:12px;color:var(--sub);margin-top:5px}
+.badge{color:var(--new);font-weight:800;font-size:12px;margin-right:4px}
+mark{background:var(--brand-soft);color:inherit;border-radius:3px;padding:0 2px}
+.empty,.msg{color:var(--sub);text-align:center;padding:36px 10px}
+.more{width:100%;margin-top:8px;padding:12px;border:1px dashed var(--line);border-radius:12px;background:none;color:var(--sub)}
+.links{display:flex;flex-wrap:wrap;gap:8px}
+.links a{font-size:13px;color:var(--brand);text-decoration:none;border:1px solid var(--line);background:var(--card);padding:7px 11px;border-radius:10px}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:s .8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes s{to{transform:rotate(360deg)}}
+.hero{text-align:center;padding:26px 6px 10px;color:var(--sub)}
+.hero h2{color:var(--ink);font-size:19px;margin:10px 0 6px}
+.hero img{width:56px;height:56px;border-radius:14px}
+.orgs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.org-card{text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.org-card b{display:block;font-size:14.5px}
+.org-card small{color:var(--sub);font-size:12px}
+@media (min-width:600px){ .orgs{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:900px){ .orgs{grid-template-columns:repeat(5,1fr)} }
+
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--bar);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);display:flex;padding:4px 4px calc(4px + var(--sb))}
+.tabbar button{flex:1;border:none;background:none;padding:6px 2px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;color:var(--sub);position:relative}
+.tabbar button .ic{font-size:20px;line-height:1.2;filter:grayscale(1);opacity:.7}
+.tabbar button.on{color:var(--tc,var(--brand));font-weight:700}
+.tabbar button.on .ic{filter:none;opacity:1}
+.tabbar .n{position:absolute;top:2px;left:calc(50% + 8px);background:var(--tc,var(--brand));color:#fff;font-size:10px;border-radius:99px;padding:0 5px;min-width:16px}
+
+.sheet-bg{position:fixed;inset:0;background:#0007;z-index:20;display:none;align-items:flex-end;justify-content:center}
+.sheet-bg.show{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:18px 18px 0 0;padding:18px 18px calc(18px + var(--sb));max-height:85vh;overflow:auto}
+.sheet h3{margin:0 0 10px}
+.sheet p{color:var(--sub);font-size:14px;margin:6px 0}
+.sheet .close{width:100%;margin-top:14px;padding:12px;border:none;border-radius:12px;background:var(--chip);font-weight:700}
+.qr{display:flex;justify-content:center;margin:12px 0;background:#fff;padding:12px;border-radius:12px}
+code{background:var(--chip);padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}
+.toast{position:fixed;left:50%;bottom:calc(84px + var(--sb));transform:translateX(-50%);background:#222;color:#fff;padding:9px 16px;border-radius:10px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:30}
+.toast.show{opacity:1}
+
+.grid{display:block}
+@media (min-width:900px){
+  body{padding-bottom:20px}
+  .appbar{padding-left:max(16px,calc((100% - 1180px)/2 + 16px));padding-right:max(16px,calc((100% - 1180px)/2 + 16px))}
+  .tabbar{display:none}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .grid .col{display:block!important}
+  .sum{grid-template-columns:2fr 1fr 1fr 1fr}
+  .sum .org{grid-column:auto}
+  .sheet-bg{align-items:center}
+  .sheet{border-radius:18px}
+}
+</style>
+</head>
+<body>
+<header class="appbar">
+  <div class="row1">
+    <div class="logo" id="home"><img src="icons/icon-192.png" alt="">지역 동향</div>
+    <button class="ibtn" id="installBtn" title="앱 설치" hidden>⬇️</button>
+    <button class="ibtn" id="phoneBtn" title="스마트폰으로 열기">📱</button>
+    <button class="ibtn" id="shareTop" title="브리핑 공유">📤</button>
+  </div>
+  <form class="search" id="f">
+    <input id="q" type="search" enterkeyhint="search" list="orgs" placeholder="지자체·유관기관명 (예: 천안시)" autocomplete="off">
+    <button type="submit">검색</button>
+  </form>
+  <div class="chips" id="days"></div>
+  <div class="chips" id="favs"></div>
+</header>
+<datalist id="orgs"></datalist>
+
+<main id="main"><div class="msg"><span class="spinner"></span>불러오는 중…</div></main>
+<script>
+/* 구형 브라우저·파일 직접 열기 대비 (ES5 문법으로 작성 — 아래 본 스크립트가 실행되지 못해도 동작) */
+(function(){
+  var m = document.getElementById("main");
+  var why = location.protocol === "file:"
+    ? "이 파일을 <b>더블클릭으로 직접 열면</b> 브라우저 보안 때문에 기사 데이터를 읽을 수 없습니다.<br><br>" +
+      "· PC에서 보려면: 폴더의 <b>실행.bat</b>을 실행하세요 (http://localhost:8765 로 열림)<br>" +
+      "· 휴대폰·외부에서: GitHub Pages 주소(https://아이디.github.io/region-news/)로 접속하세요"
+    : "화면을 불러오지 못했습니다. 브라우저가 너무 오래되었을 수 있습니다.<br>크롬·엣지·사파리 최신 버전으로 열어 주세요.";
+  if (location.protocol === "file:") { m.innerHTML = '<div class="msg">' + why + '</div>'; window.__STOP__ = true; return; }
+  setTimeout(function(){ if (!window.__APP_OK__) m.innerHTML = '<div class="msg">' + why + '</div>'; }, 8000);
+})();
+</script>
+
+<nav class="tabbar" id="tabbar"></nav>
+<div class="sheet-bg" id="sheetBg"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================================================== 기본 데이터
+const SIDO = ["서울특별시","부산광역시","대구광역시","인천광역시","광주광역시","대전광역시","울산광역시","세종특별자치시",
+  "경기도","강원특별자치도","충청북도","충청남도","전북특별자치도","전라남도","경상북도","경상남도","제주특별자치도"];
+const SI = "수원시 성남시 고양시 용인시 부천시 안산시 안양시 남양주시 화성시 평택시 의정부시 시흥시 파주시 김포시 광명시 광주시 군포시 하남시 오산시 이천시 안성시 의왕시 양주시 포천시 여주시 동두천시 과천시 구리시 춘천시 원주시 강릉시 동해시 태백시 속초시 삼척시 청주시 충주시 제천시 천안시 공주시 보령시 아산시 서산시 논산시 계룡시 당진시 전주시 군산시 익산시 정읍시 남원시 김제시 목포시 여수시 순천시 나주시 광양시 포항시 경주시 김천시 안동시 구미시 영주시 영천시 상주시 문경시 경산시 창원시 진주시 통영시 사천시 김해시 밀양시 거제시 양산시 제주시 서귀포시".split(" ");
+const CATS = [
+  {k:"issues", label:"주요이슈", long:"주요이슈·기사", ic:"📰", color:"var(--c-issues)"},
+  {k:"leader", label:"단체장동향", long:"단체장 동향·브리핑", ic:"🎤", color:"var(--c-leader)"},
+  {k:"policy", label:"지원정책", long:"지원정책·공고", ic:"📢", color:"var(--c-policy)"},
+];
+const PAGE = 20;
+const PROXIES = [
+  u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
+  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+  u => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u),
+];
+const IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const GH = location.hostname.endsWith(".github.io")
+  ? {user: location.hostname.split(".")[0], repo: location.pathname.split("/").filter(Boolean)[0] || ""} : null;
+
+// ==================================================== 공통
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d }catch{ return d } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)) }catch{} }
+};
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const now = () => Date.now()/1000;
+function ago(ts){
+  const d = now() - ts;
+  if (d < 3600) return Math.max(1,Math.floor(d/60))+"분 전";
+  if (d < 86400) return Math.floor(d/3600)+"시간 전";
+  if (d < 86400*7) return Math.floor(d/86400)+"일 전";
+  const t = new Date(ts*1000); return `${t.getMonth()+1}.${t.getDate()}`;
+}
+function toast(m){ const t=$("#toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove("show"),1800); }
+function openSheet(html){ $("#sheet").innerHTML = html + `<button class="close" data-close>닫기</button>`; $("#sheetBg").classList.add("show"); }
+$("#sheetBg").addEventListener("click", e=>{ if (e.target.id==="sheetBg" || e.target.closest("[data-close]")) $("#sheetBg").classList.remove("show"); });
+
+// ==================================================== 분석 (키워드·단체장 추정)
+function headTitles(n){
+  n = n.trim();
+  const P = {"충청남":"충남","충청북":"충북","전라남":"전남","전라북":"전북","경상남":"경남","경상북":"경북"};
+  if (/(특별시|광역시)$/.test(n)) return [n.slice(0,-3)+"시장", n+"장"];
+  if (n.endsWith("특별자치시")) return [n.slice(0,-5)+"시장"];
+  if (n.endsWith("특별자치도") || (n.endsWith("도") && n.length<=5)){
+    let s = n.endsWith("특별자치도") ? n.slice(0,-5) : n.slice(0,-1); s = P[s] || s;
+    return [s+"지사", s+"도지사"];
+  }
+  if (n.endsWith("시")) return [n+"장"];
+  if (n.endsWith("군")) return [n+"수"];
+  if (n.endsWith("구")) return [n+"청장"];
+  return ["이사장","원장","회장","대표","청장"].map(t=>`${n} ${t}`);
+}
+const STOP = new Set(("있다 했다 밝혔다 위해 대한 통해 관련 이번 지난 오는 올해 내년 최근 진행 개최 추진 지역 위한 함께 대해 가운데 따라 " +
+  "기자 뉴스 일보 신문 사진 영상 단독 종합 속보 오늘 내일 지원 사업 시민 주민 센터 한다 된다 있는 없는 그리고 하는 시정브리핑 브리핑").split(" "));
+// 기사 제목의 "이름 + 직함" 패턴으로 기관장 추정
+//  지자체:   "장기수 천안시장", "박수현 충남지사"
+//  유관기관: "김세용 충남신용보증재단 이사장", "충남신보 김세용 이사장", "김세용 충남신보 이사장 후보자"
+const NOT_NAME = new Set("신임 차기 초대 현직 전임 후보 직무 대행 상임 비상임 공동 명예 부이사 사무국 이사회 대표단 위원장 신규 역대 기관장".split(" "));
+const STATUS = [[/^\s*(후보자?|후보로)/,"후보자"],[/^\s*내정/,"내정자"],[/^\s*(직무대행|권한대행|대행)/,"직무대행"]];
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function guessLeader(items, heads, orgName){
+  const isOrg = heads[0].includes(" ");
+  const c = new Map();   // 이름 → {n, title, status:{}, ts}
+  const add = (name, title, after, ts) => {
+    if (STOP.has(name) || NOT_NAME.has(name) || /[는은의과와및도에]$/.test(name)) return;
+    const e = c.get(name) || {n:0, title, status:{}, ts:0};
+    e.n++; e.ts = Math.max(e.ts, ts);
+    for (const [re, label] of STATUS) if (re.test(after)) e.status[label] = (e.status[label]||0) + 1;
+    c.set(name, e);
+  };
+  if (!isOrg){
+    for (const h of heads.slice(0,2)){
+      const re = new RegExp("(?<![가-힣])([가-힣]{2,4})\\s?" + reEsc(h) + "(.{0,4})", "g");
+      for (const it of items) for (const m of it.title.matchAll(re)) add(m[1], heads[0], m[2], it.ts);
+    }
+  } else {
+    // 직함: 긴 것부터 (대표이사가 대표보다, 이사장이 사장보다 먼저 잡히도록)
+    const TITLES = "대표이사|이사장|본부장|센터장|지사장|청장|원장|회장|사장|대표|총장|의장|단장";
+    // 이름과 직함 사이에 '제13대', '신임', 기관명(약칭) 같은 말이 최대 2개까지 올 수 있음
+    const re = new RegExp("(?<![가-힣])([가-힣]{3})\\s+((?:\\S{1,15}\\s+){0,2})(" + TITLES + ")(.{0,4})", "g");
+    const stem = orgName.replace(/\s/g,"");
+    // 기관명 또는 약칭(충남신보·충남TP 처럼 앞 2글자가 같고 짧은 말)
+    const isOrgWord = w => w === stem || w.includes(stem) || (stem.includes(w) && w.length >= 3) || (w.length <= 6 && w.slice(0,2) === stem.slice(0,2));
+    const isModifier = w => /^(제\d+대|초대|신임|차기|신규|현|새|첫|민선\d*기?)$/.test(w);
+    for (const it of items){
+      const t = it.title, aboutOrg = t.replace(/\s/g,"").includes(stem);
+      for (const m of t.matchAll(re)){
+        const [, name, midRaw, title, after] = m;
+        const mids = midRaw.trim() ? midRaw.trim().split(/\s+/) : [];
+        if (mids.some(w => /^(전|前|전임)$/.test(w))) continue;      // 전 이사장 제외
+        if (!mids.every(w => isOrgWord(w) || isModifier(w))) continue;
+        if (!aboutOrg && !mids.some(isOrgWord)) continue;          // 기관명이 없는 "홍길동 원장"은 다른 기관일 수 있음
+        add(name, `${orgName} ${title}`, after, it.ts);
+      }
+    }
+  }
+  const best = [...c.entries()].sort((a,b)=>b[1].n-a[1].n || b[1].ts-a[1].ts)[0];
+  if (!best || best[1].n < 2) return null;
+  const [name, e] = best;
+  const st = Object.entries(e.status).sort((a,b)=>b[1]-a[1])[0];
+  return {name, title: e.title, mentions: e.n, status: st && st[1] >= e.n/2 ? st[0] : ""};
+}
+function keywords(items, name, exclude){
+  const stem = name.replace(/(특별자치시|특별자치도|특별시|광역시|시|군|구|도)$/,"");
+  const c = new Map();
+  for (const it of items){
+    const ws = new Set(it.title.replace(/\[[^\]]*\]/g," ").match(/[가-힣A-Za-z0-9]{2,}/g) || []);
+    for (let w of ws){
+      w = w.replace(/(에서|으로|에게|까지|부터|이다|에는|와의|과의|은|는|이|가|을|를|의|에|와|과|도|로)$/,"");
+      if (w.length<2 || STOP.has(w) || (stem && w.includes(stem)) || name.includes(w) || /^\d+$/.test(w)) continue;
+      if (exclude.some(e => e.includes(w) || w.includes(e))) continue;
+      c.set(w, (c.get(w)||0)+1);
+    }
+  }
+  return [...c.entries()].filter(([,n])=>n>=2).sort((a,b)=>b[1]-a[1]).slice(0,18).map(([word,count])=>({word,count}));
+}
+
+// ==================================================== 데이터 가져오기
+let INDEX = {updated:0, orgs:[]};
+async function loadIndex(){
+  try{ INDEX = await (await fetch("data/index.json?t="+Date.now(), {signal: AbortSignal.timeout ? AbortSignal.timeout(10000) : undefined})).json(); }catch{ INDEX = {updated:0, orgs:[]}; }
+  const names = [...INDEX.orgs.map(o=>o.name), ...SIDO, ...SI];
+  $("#orgs").innerHTML = [...new Set(names)].map(n=>`<option value="${esc(n)}">`).join("");
+}
+const findOrg = n => INDEX.orgs.find(o=>o.name===n);
+
+function rssUrl(q){ return "https://news.google.com/rss/search?" + new URLSearchParams({q:q+" when:30d", hl:"ko", gl:"KR", ceid:"KR:ko"}); }
+function parseRss(text){
+  const doc = new DOMParser().parseFromString(text, "text/xml");
+  return [...doc.querySelectorAll("item")].map(it=>{
+    const source = it.querySelector("source")?.textContent.trim() || "";
+    let title = it.querySelector("title")?.textContent.trim() || "";
+    if (source && title.endsWith(" - "+source)) title = title.slice(0, -(source.length+3));
+    return {title, link: it.querySelector("link")?.textContent || "", source, ts: Math.floor(new Date(it.querySelector("pubDate")?.textContent).getTime()/1000) || 0};
+  });
+}
+async function fetchVia(url){
+  let lastErr;
+  for (const p of PROXIES){
+    try{
+      const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 12000);
+      const r = await fetch(p(url), {signal: ctl.signal}); clearTimeout(tm);
+      if (!r.ok) throw new Error("HTTP "+r.status);
+      const t = await r.text(); if (!t.includes("<rss")) throw new Error("RSS 아님");
+      return parseRss(t);
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("프록시 실패");
+}
+const normT = t => t.replace(/\[[^\]]*\]/g,"").replace(/[^가-힣A-Za-z0-9]/g,"").slice(0,28);
+function dedupe(items){ const s=new Set(); return items.sort((a,b)=>b.ts-a.ts).filter(i=>{ const k=normT(i.title); if(s.has(k)) return false; s.add(k); return true; }); }
+
+async function liveCollect(name){
+  const heads = headTitles(name);
+  const queries = exact => {
+    const w = exact ? `"${name}"` : name, H = heads.map(h=>exact?`"${h}"`:`(${h})`).join(" OR ");
+    const leaderQ = heads[0].includes(" ")
+      ? `${w} (이사장 OR 원장 OR 회장 OR 대표이사 OR 청장 OR 센터장 OR 본부장 OR 사장 OR 지사장)`
+      : `(${H}) (브리핑 OR 발표 OR 기자회견 OR 간담회 OR 현장 OR 방문 OR 협약 OR 회의)`;
+    return [w, `${w} (보도자료 OR 밝혔다 OR 추진 OR 선정 OR 개최)`, leaderQ,
+      `${w} (지원사업 OR 지원정책 OR 공고 OR 모집 OR 보조금 OR 신청 OR 지원금 OR 시행)`];
+  };
+  const go = async exact => {
+    const res = await Promise.allSettled(queries(exact).map(q=>fetchVia(rssUrl(q))));
+    if (res.every(r=>r.status==="rejected")) throw res[0].reason;
+    return res.map(r=>r.status==="fulfilled"?r.value:[]);
+  };
+  let out = await go(true);
+  if (out[0].length < 5){ const o2 = await go(false); if (o2[0].length > out[0].length) out = o2; }  // 긴 기관명은 따옴표 없이
+  const [a,b,c,d] = out;
+  return {name, days:30, fetched:Math.floor(now()), heads, issues:dedupe([...a,...b]).slice(0,80), leader:dedupe(c).slice(0,50), policy:dedupe(d).slice(0,50), live:true};
+}
+
+async function getData(name){
+  const o = findOrg(name);
+  if (o){
+    const r = await fetch("data/"+encodeURIComponent(o.file)+"?t="+o.fetched);
+    if (r.ok) return {...await r.json(), mode:"auto"};
+  }
+  if (IS_LOCAL){   // PC 미리보기(server.py)에서는 서버가 직접 수집
+    try{ const r = await fetch("api/raw?q="+encodeURIComponent(name)); if (r.ok) return {...await r.json(), mode:"live"}; }catch{}
+  }
+  return {...await liveCollect(name), mode:"live"};
+}
+
+// ==================================================== 상태 / 화면
+let raw = null, view = null, kwFilter = null, tab = "issues", days = store.get("days2", 7), shown = {};
+
+function renderDays(){
+  $("#days").innerHTML = `<span class="lbl">기간</span>` + [1,3,7,30].map(d=>`<button class="chip ${d==days?'on':''}" data-days="${d}">${d===1?"오늘":d+"일"}</button>`).join("");
+}
+function renderFavs(){
+  const favs = store.get("favs", []), recent = store.get("recent", []).filter(n=>!favs.includes(n)).slice(0,6);
+  let h = "";
+  if (favs.length) h += `<span class="lbl">⭐</span>` + favs.map(n=>`<button class="chip ghost" data-go="${esc(n)}">${esc(n)}<span class="x" data-del="${esc(n)}">✕</span></button>`).join("");
+  if (recent.length) h += `<span class="lbl">최근</span>` + recent.map(n=>`<button class="chip ghost" data-go="${esc(n)}">${esc(n)}</button>`).join("");
+  $("#favs").innerHTML = h; $("#favs").style.display = h ? "" : "none";
+}
+
+function renderHome(){
+  raw = view = null;
+  history.replaceState(null, "", location.pathname);
+  $("#q").value = "";
+  const list = INDEX.orgs.length
+    ? `<div class="sec">📡 자동 수집 기관 <span style="font-weight:400">· ${INDEX.updated?ago(INDEX.updated)+" 갱신":""}</span></div>
+       <div class="orgs">${INDEX.orgs.map(o=>`<button class="org-card" data-go="${esc(o.name)}"><b>${esc(o.name)}</b><small>최근 30일 ${o.count}건</small></button>`).join("")}</div>`
+    : `<div class="note warn">자동 수집 데이터가 아직 없습니다. GitHub Actions가 처음 실행되면 채워집니다.</div>`;
+  $("#main").innerHTML = `<div class="hero"><img src="icons/icon-192.png" alt="">
+    <h2>어느 지역 소식을 볼까요?</h2>
+    <div>기관명을 검색하거나 아래에서 고르세요.<br>주요이슈 · 단체장 동향 · 지원정책을 모아 보여드려요.</div></div>${list}`;
+  renderTabbar();
+}
+
+async function run(name){
+  name = (name ?? $("#q").value).trim(); if (!name) return;
+  $("#q").value = name; $("#q").blur();
+  kwFilter = null; shown = {};
+  const known = findOrg(name);
+  $("#main").innerHTML = `<div class="msg"><span class="spinner"></span>“${esc(name)}” ${known||IS_LOCAL?"불러오는 중…":"실시간 검색 중… (10~20초)"}</div>`;
+  history.replaceState(null, "", `?q=${encodeURIComponent(name)}`);
+  store.set("recent", [name, ...store.get("recent",[]).filter(n=>n!==name)].slice(0,10)); renderFavs();
+  try{
+    raw = await getData(name); compute(); render();
+  }catch(err){
+    $("#main").innerHTML = `<div class="msg">“${esc(name)}” 소식을 불러오지 못했습니다.<br><small>${esc(err.message||err)}</small></div>${addHint(name)}`;
+  }
+}
+
+function compute(){
+  const cut = now() - days*86400, f = l => (l||[]).filter(i=>i.ts>=cut);
+  const v = {issues:f(raw.issues), leader:f(raw.leader), policy:f(raw.policy)};
+  const all = [...v.issues, ...v.leader, ...v.policy];
+  const heads = raw.heads || headTitles(raw.name);
+  v.lg = guessLeader([...(raw.leader||[]), ...(raw.issues||[]), ...(raw.policy||[])], heads, raw.name);   // 이름 추정은 30일 전체로
+  const ex = heads.flatMap(h=>h.split(" ")); if (v.lg) ex.push(v.lg.name);
+  v.keywords = keywords(all, raw.name, ex);
+  view = v;
+}
+const filtered = k => kwFilter ? view[k].filter(i=>i.title.includes(kwFilter)) : view[k];
+
+function addHint(name){
+  const edit = GH ? `https://github.com/${GH.user}/${GH.repo}/edit/main/orgs.txt` : null;
+  return `<div class="note">💡 자주 보는 기관이면 자동 수집 목록(<b>orgs.txt</b>)에 “${esc(name)}”을 추가하세요. 매시간 자동으로 모아 두어 빠르고 안정적으로 열립니다.${edit?` <a href="${edit}" target="_blank" rel="noopener">목록 수정하기 →</a>`:""}</div>`;
+}
+
+function itemHTML(i){
+  const fresh = now() - i.ts < 86400;
+  let t = esc(i.title); if (kwFilter) t = t.split(esc(kwFilter)).join(`<mark>${esc(kwFilter)}</mark>`);
+  return `<a class="item" href="${esc(i.link)}" target="_blank" rel="noopener">
+    <div class="t">${fresh?'<span class="badge">NEW</span>':''}${t}</div>
+    <div class="m"><span>${esc(i.source)}</span><span>·</span><span>${ago(i.ts)}</span></div></a>`;
+}
+function colHTML(c){
+  const all = filtered(c.k), n = shown[c.k] || PAGE, l = all.slice(0, n);
+  return `<section class="col" style="--tc:${c.color};display:${c.k===tab?'block':'none'}">
+    <div class="cathead"><h2>${c.long}</h2><span>${all.length}건</span></div>
+    ${l.length ? `<div class="list">${l.map(itemHTML).join("")}</div>` : `<div class="empty">${days===1?"오늘":"최근 "+days+"일"} 검색된 기사가 없습니다.${days<30?"<br>기간을 늘려 보세요.":""}</div>`}
+    ${all.length > n ? `<button class="more" data-more="${c.k}">더 보기 (${all.length-n}건 남음)</button>` : ""}
+  </section>`;
+}
+function renderTabbar(){
+  $("#tabbar").innerHTML = CATS.map(c=>`<button data-tab="${c.k}" class="${view && c.k===tab?'on':''}" style="--tc:${c.color}">
+      <span class="ic">${c.ic}</span>${c.label}${view?`<span class="n">${filtered(c.k).length}</span>`:""}</button>`).join("")
+    + `<button data-tab="share"><span class="ic">📤</span>브리핑 공유</button>`;
+}
+
+function render(){
+  const v = view, q = raw.name, lg = v.lg, enc = encodeURIComponent;
+  const isFav = store.get("favs",[]).includes(q);
+  const total = v.issues.length + v.leader.length + v.policy.length;
+  const latest = Math.max(0, ...[...v.issues, ...v.leader, ...v.policy].map(i=>i.ts));
+  const modeNote = raw.mode==="auto" ? `<div class="note">📡 자동 수집 데이터 · ${ago(raw.fetched)} 갱신 (매시간 자동 업데이트)</div>`
+    : raw.mode==="live" ? `<div class="note warn">🔎 자동 수집 목록에 없는 기관이라 실시간 검색했습니다.</div>${addHint(q)}` : "";
+  const dl = days===1 ? "오늘" : `최근 ${days}일`;
+  $("#main").innerHTML = `${modeNote}
+    <div class="card sum">
+      <div class="org"><b>${esc(q)}</b><button class="star" id="favBtn">${isFav?"⭐ 저장됨":"☆ 즐겨찾기"}</button></div>
+      <div><small>${lg?esc(lg.title):"기관장"}</small><strong>${lg?esc(lg.name):"–"}</strong>${lg&&lg.status?` <span class="stbadge">${esc(lg.status)}</span>`:""}<small>${lg?`기사 ${lg.mentions}건 언급·자동추정`:"기사에서 찾지 못함"}</small></div>
+      <div><small>${dl} 기사</small><strong>${total}건</strong><small>이슈 ${v.issues.length}·동향 ${v.leader.length}·정책 ${v.policy.length}</small></div>
+      <div><small>가장 최근 기사</small><strong>${latest?ago(latest):"–"}</strong><small>수집 ${new Date(raw.fetched*1000).toLocaleString("ko-KR",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}</small></div>
+    </div>
+    <div class="sec">🔥 주요 이슈 키워드 <span style="font-weight:400">· 누르면 해당 기사만</span></div>
+    <div class="kws">${v.keywords.length ? v.keywords.map(k=>`<button class="kw ${kwFilter===k.word?'on':''}" data-kw="${esc(k.word)}">${esc(k.word)}<i>${k.count}</i></button>`).join("") : `<span style="color:var(--sub);font-size:13px">추출된 키워드가 없습니다.</span>`}</div>
+    <div class="grid">${CATS.map(colHTML).join("")}</div>
+    <div class="sec">🔗 바로가기</div>
+    <div class="links">
+      <a target="_blank" rel="noopener" href="https://m.search.naver.com/search.naver?where=m_news&sort=1&query=${enc(q)}">네이버 뉴스 최신순</a>
+      <a target="_blank" rel="noopener" href="https://www.google.com/search?q=${enc(q+" 보도자료")}">보도자료 검색</a>
+      <a target="_blank" rel="noopener" href="https://www.google.com/search?q=${enc(q+" 공식 홈페이지")}">공식 홈페이지</a>
+      <a target="_blank" rel="noopener" href="https://www.google.com/search?q=${enc("site:bizinfo.go.kr "+q)}">기업마당 지원사업</a>
+      <a target="_blank" rel="noopener" href="https://www.korea.kr/briefing/pressReleaseList.do">정책브리핑</a>
+    </div>`;
+  renderTabbar();
+}
+
+// ==================================================== 이벤트
+document.addEventListener("click", e=>{
+  const del = e.target.closest("[data-del]");
+  if (del){ e.stopPropagation(); store.set("favs", store.get("favs",[]).filter(n=>n!==del.dataset.del)); renderFavs(); return; }
+  const go = e.target.closest("[data-go]");
+  if (go){ run(go.dataset.go); return; }
+  const dd = e.target.closest("[data-days]");
+  if (dd){ days = +dd.dataset.days; store.set("days2", days); renderDays(); if (raw){ shown={}; kwFilter=null; compute(); render(); } return; }
+  const kw = e.target.closest("[data-kw]");
+  if (kw){ kwFilter = kwFilter===kw.dataset.kw ? null : kw.dataset.kw; shown = {}; render(); return; }
+  const tb = e.target.closest("[data-tab]");
+  if (tb){ if (tb.dataset.tab==="share") return shareBrief(); if (!view) return; tab = tb.dataset.tab; render(); window.scrollTo({top:0,behavior:"smooth"}); return; }
+  const more = e.target.closest("[data-more]");
+  if (more){ shown[more.dataset.more] = (shown[more.dataset.more]||PAGE) + PAGE; render(); return; }
+  if (e.target.closest("#favBtn")){
+    const q = raw.name; let f = store.get("favs",[]);
+    f = f.includes(q) ? f.filter(n=>n!==q) : [q, ...f];
+    store.set("favs", f); renderFavs(); render(); toast(f.includes(q)?"즐겨찾기에 추가했어요":"즐겨찾기에서 뺐어요");
+  }
+});
+$("#f").addEventListener("submit", e=>{ e.preventDefault(); run(); });
+$("#home").addEventListener("click", renderHome);
+$("#shareTop").addEventListener("click", shareBrief);
+
+let sx=0, sy=0;
+$("#main").addEventListener("touchstart", e=>{ sx=e.touches[0].clientX; sy=e.touches[0].clientY; }, {passive:true});
+$("#main").addEventListener("touchend", e=>{
+  if (!view || e.target.closest(".kws")) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy)*1.5) return;
+  const i = CATS.findIndex(c=>c.k===tab), j = i + (dx<0?1:-1);
+  if (j>=0 && j<CATS.length){ tab = CATS[j].k; render(); }
+}, {passive:true});
+
+// ==================================================== 브리핑 공유
+function briefText(){
+  const v = view, dt = new Date().toLocaleDateString("ko-KR");
+  let t = `■ ${raw.name} 동향 (${dt}, ${days===1?"오늘":"최근 "+days+"일"}${kwFilter?` · '${kwFilter}'`:""})\n`;
+  if (v.lg) t += `- ${v.lg.title}: ${v.lg.name}${v.lg.status?` (${v.lg.status})`:""}\n`;
+  if (v.keywords.length) t += `- 주요 키워드: ${v.keywords.slice(0,8).map(k=>k.word).join(", ")}\n`;
+  for (const c of CATS){
+    const l = filtered(c.k).slice(0,5); if (!l.length) continue;
+    t += `\n[${c.long}]\n` + l.map(i=>`· ${i.title} (${i.source}, ${ago(i.ts)})\n  ${i.link}`).join("\n") + "\n";
+  }
+  return t;
+}
+async function shareBrief(){
+  if (!view){ toast("먼저 기관을 검색해 주세요"); return; }
+  const text = briefText();
+  if (navigator.share){ try{ await navigator.share({title:`${raw.name} 동향`, text}); return; }catch(e){ if (e.name==="AbortError") return; } }
+  try{ await navigator.clipboard.writeText(text); toast("브리핑을 복사했어요"); }
+  catch{ openSheet(`<h3>브리핑 텍스트</h3><p>길게 눌러 복사하세요.</p><textarea style="width:100%;height:50vh;font-size:13px">${esc(text)}</textarea>`); }
+}
+
+// ==================================================== 스마트폰으로 열기 (QR)
+$("#phoneBtn").addEventListener("click", async ()=>{
+  const url = location.origin + location.pathname;
+  openSheet(`<h3>📱 스마트폰에서 열기</h3>
+    <p>휴대폰 카메라로 QR을 찍으세요.</p>
+    ${IS_LOCAL?`<p class="note warn">지금은 PC 미리보기 주소라 휴대폰에서 열리지 않습니다. GitHub Pages 주소에서 이 버튼을 누르세요.</p>`:""}
+    <div class="qr" id="qrBox">QR 생성 중…</div>
+    <p style="text-align:center"><code>${esc(url)}</code></p>
+    <p><b>홈 화면에 앱으로 추가</b><br>· 안드로이드(크롬): ⋮ 메뉴 → <b>홈 화면에 추가</b> (또는 앱 설치)<br>· 아이폰(사파리): 공유 버튼 → <b>홈 화면에 추가</b></p>`);
+  try{
+    if (!window.QRCode) await new Promise((ok, no)=>{ const s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"; s.onload=ok; s.onerror=no; document.head.appendChild(s); });
+    $("#qrBox").innerHTML = ""; new QRCode($("#qrBox"), {text:url, width:200, height:200});
+  }catch{ $("#qrBox").textContent = "QR을 만들 수 없습니다. 위 주소를 휴대폰에 직접 입력하세요."; }
+});
+
+// ==================================================== 앱 설치 / 오프라인
+let deferred = null;
+window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); deferred = e; $("#installBtn").hidden = false; });
+$("#installBtn").addEventListener("click", async ()=>{ if (!deferred) return; deferred.prompt(); await deferred.userChoice; deferred = null; $("#installBtn").hidden = true; });
+if ("serviceWorker" in navigator && window.isSecureContext) navigator.serviceWorker.register("sw.js").catch(()=>{});
+if (matchMedia("(display-mode: standalone)").matches) $("#phoneBtn").hidden = true;
+
+// ==================================================== 시작
+(async ()=>{
+  window.__APP_OK__ = true;
+  if (window.__STOP__) return;     // 파일 직접 열기: 안내문만 표시
+  renderDays(); renderFavs();
+  await loadIndex();
+  const p = new URLSearchParams(location.search), favs = store.get("favs",[]);
+  if (p.get("q")) run(p.get("q"));
+  else if (favs[0]) run(favs[0]);            // 앱을 열면 첫 즐겨찾기 바로 표시
+  else renderHome();
+})();
+</script>
+</body>
+</html>
