@@ -175,11 +175,6 @@ const CATS = [
   {k:"policy", label:"지원정책", long:"지원정책·공고", ic:"📢", color:"var(--c-policy)"},
 ];
 const PAGE = 20;
-const PROXIES = [
-  u => "https://corsproxy.io/?url=" + encodeURIComponent(u),
-  u => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
-  u => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u),
-];
 const IS_LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
 const GH = location.hostname.endsWith(".github.io")
   ? {user: location.hostname.split(".")[0], repo: location.pathname.split("/").filter(Boolean)[0] || ""} : null;
@@ -292,53 +287,6 @@ async function loadIndex(){
 }
 const findOrg = n => INDEX.orgs.find(o=>o.name===n);
 
-function rssUrl(q){ return "https://news.google.com/rss/search?" + new URLSearchParams({q:q+" when:30d", hl:"ko", gl:"KR", ceid:"KR:ko"}); }
-function parseRss(text){
-  const doc = new DOMParser().parseFromString(text, "text/xml");
-  return [...doc.querySelectorAll("item")].map(it=>{
-    const source = it.querySelector("source")?.textContent.trim() || "";
-    let title = it.querySelector("title")?.textContent.trim() || "";
-    if (source && title.endsWith(" - "+source)) title = title.slice(0, -(source.length+3));
-    return {title, link: it.querySelector("link")?.textContent || "", source, ts: Math.floor(new Date(it.querySelector("pubDate")?.textContent).getTime()/1000) || 0};
-  });
-}
-async function fetchVia(url){
-  let lastErr;
-  for (const p of PROXIES){
-    try{
-      const ctl = new AbortController(); const tm = setTimeout(()=>ctl.abort(), 12000);
-      const r = await fetch(p(url), {signal: ctl.signal}); clearTimeout(tm);
-      if (!r.ok) throw new Error("HTTP "+r.status);
-      const t = await r.text(); if (!t.includes("<rss")) throw new Error("RSS 아님");
-      return parseRss(t);
-    }catch(e){ lastErr = e; }
-  }
-  throw lastErr || new Error("프록시 실패");
-}
-const normT = t => t.replace(/\[[^\]]*\]/g,"").replace(/[^가-힣A-Za-z0-9]/g,"").slice(0,28);
-function dedupe(items){ const s=new Set(); return items.sort((a,b)=>b.ts-a.ts).filter(i=>{ const k=normT(i.title); if(s.has(k)) return false; s.add(k); return true; }); }
-
-async function liveCollect(name){
-  const heads = headTitles(name);
-  const queries = exact => {
-    const w = exact ? `"${name}"` : name, H = heads.map(h=>exact?`"${h}"`:`(${h})`).join(" OR ");
-    const leaderQ = heads[0].includes(" ")
-      ? `${w} (이사장 OR 원장 OR 회장 OR 대표이사 OR 청장 OR 센터장 OR 본부장 OR 사장 OR 지사장)`
-      : `(${H}) (브리핑 OR 발표 OR 기자회견 OR 간담회 OR 현장 OR 방문 OR 협약 OR 회의)`;
-    return [w, `${w} (보도자료 OR 밝혔다 OR 추진 OR 선정 OR 개최)`, leaderQ,
-      `${w} (지원사업 OR 지원정책 OR 공고 OR 모집 OR 보조금 OR 신청 OR 지원금 OR 시행)`];
-  };
-  const go = async exact => {
-    const res = await Promise.allSettled(queries(exact).map(q=>fetchVia(rssUrl(q))));
-    if (res.every(r=>r.status==="rejected")) throw res[0].reason;
-    return res.map(r=>r.status==="fulfilled"?r.value:[]);
-  };
-  let out = await go(true);
-  if (out[0].length < 5){ const o2 = await go(false); if (o2[0].length > out[0].length) out = o2; }  // 긴 기관명은 따옴표 없이
-  const [a,b,c,d] = out;
-  return {name, days:30, fetched:Math.floor(now()), heads, issues:dedupe([...a,...b]).slice(0,80), leader:dedupe(c).slice(0,50), policy:dedupe(d).slice(0,50), live:true};
-}
-
 async function getData(name){
   const o = findOrg(name);
   if (o){
@@ -348,7 +296,8 @@ async function getData(name){
   if (IS_LOCAL){   // PC 미리보기(server.py)에서는 서버가 직접 수집
     try{ const r = await fetch("api/raw?q="+encodeURIComponent(name)); if (r.ok) return {...await r.json(), mode:"live"}; }catch{}
   }
-  return {...await liveCollect(name), mode:"live"};
+  // 무료 공개 프록시는 유료화·차단으로 신뢰할 수 없어 사용하지 않음 → 안내 화면으로
+  const e = new Error("not-listed"); e.notListed = true; throw e;
 }
 
 // ==================================================== 상태 / 화면
@@ -384,13 +333,15 @@ async function run(name){
   $("#q").value = name; $("#q").blur();
   kwFilter = null; shown = {};
   const known = findOrg(name);
-  $("#main").innerHTML = `<div class="msg"><span class="spinner"></span>“${esc(name)}” ${known||IS_LOCAL?"불러오는 중…":"실시간 검색 중… (10~20초)"}</div>`;
+  $("#main").innerHTML = `<div class="msg"><span class="spinner"></span>“${esc(name)}” ${!known&&IS_LOCAL?"실시간 검색 중… (10~20초)":"불러오는 중…"}</div>`;
   history.replaceState(null, "", `?q=${encodeURIComponent(name)}`);
   store.set("recent", [name, ...store.get("recent",[]).filter(n=>n!==name)].slice(0,10)); renderFavs();
   try{
     raw = await getData(name); compute(); render();
   }catch(err){
-    $("#main").innerHTML = `<div class="msg">“${esc(name)}” 소식을 불러오지 못했습니다.<br><small>${esc(err.message||err)}</small></div>${addHint(name)}`;
+    raw = view = null; renderTabbar();
+    if (err.notListed){ renderNotListed(name); return; }
+    $("#main").innerHTML = `<div class="msg">“${esc(name)}” 소식을 불러오지 못했습니다.<br><small>${esc(err.message||err)}</small></div>`;
   }
 }
 
@@ -405,6 +356,27 @@ function compute(){
   view = v;
 }
 const filtered = k => kwFilter ? view[k].filter(i=>i.title.includes(kwFilter)) : view[k];
+
+function renderNotListed(name){
+  const enc = encodeURIComponent, edit = GH ? `https://github.com/${GH.user}/${GH.repo}/edit/main/orgs.txt` : null;
+  const similar = INDEX.orgs.filter(o => o.name.includes(name) || name.includes(o.name.replace(/(시|도)$/,""))).slice(0,4);
+  $("#main").innerHTML = `
+    <div class="card" style="text-align:center;padding:22px 16px">
+      <div style="font-size:34px">📭</div>
+      <h2 style="font-size:18px;margin:6px 0">“${esc(name)}”은(는) 자동 수집 목록에 없어요</h2>
+      <p style="color:var(--sub);font-size:14px;margin:0">목록에 추가하면 몇 분 안에 수집되고, 이후 매시간 자동으로 갱신됩니다.</p>
+    </div>
+    ${similar.length?`<div class="sec">혹시 이 기관인가요?</div><div class="orgs">${similar.map(o=>`<button class="org-card" data-go="${esc(o.name)}"><b>${esc(o.name)}</b><small>최근 30일 ${o.count}건</small></button>`).join("")}</div>`:""}
+    <div class="sec">지금 바로 기사 보기</div>
+    <div class="links">
+      <a target="_blank" rel="noopener" href="https://news.google.com/search?q=${enc('"'+name+'" when:7d')}&hl=ko&gl=KR&ceid=KR:ko">구글 뉴스 (최근 7일)</a>
+      <a target="_blank" rel="noopener" href="https://m.search.naver.com/search.naver?where=m_news&sort=1&query=${enc(name)}">네이버 뉴스 최신순</a>
+    </div>
+    <div class="sec">자동 수집 목록에 추가하기</div>
+    <div class="note">${edit
+      ? `① <a href="${edit}" target="_blank" rel="noopener">orgs.txt 수정 화면 열기 →</a> (GitHub 로그인 필요)<br>② 맨 아래 줄에 <b>${esc(name)}</b> 입력 → <b>Commit changes</b><br>③ 3~5분 뒤 이 화면을 새로고침`
+      : `GitHub 저장소의 <b>orgs.txt</b> 맨 아래 줄에 <b>${esc(name)}</b>을 추가하고 Commit하면 몇 분 뒤 수집됩니다.`}</div>`;
+}
 
 function addHint(name){
   const edit = GH ? `https://github.com/${GH.user}/${GH.repo}/edit/main/orgs.txt` : null;
