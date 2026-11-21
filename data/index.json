@@ -1,125 +1,125 @@
 {
- "updated": 1795223391,
+ "updated": 1795229574,
  "orgs": [
   {
    "name": "충청남도",
    "file": "충청남도.json",
-   "fetched": 1795223322,
+   "fetched": 1795229506,
    "count": 145
   },
   {
    "name": "천안시",
    "file": "천안시.json",
-   "fetched": 1795223325,
-   "count": 132
+   "fetched": 1795229509,
+   "count": 141
   },
   {
    "name": "아산시",
    "file": "아산시.json",
-   "fetched": 1795223329,
-   "count": 130
+   "fetched": 1795229513,
+   "count": 174
   },
   {
    "name": "공주시",
    "file": "공주시.json",
-   "fetched": 1795223332,
+   "fetched": 1795229516,
    "count": 144
   },
   {
    "name": "보령시",
    "file": "보령시.json",
-   "fetched": 1795223336,
-   "count": 149
+   "fetched": 1795229520,
+   "count": 148
   },
   {
    "name": "서산시",
    "file": "서산시.json",
-   "fetched": 1795223339,
-   "count": 132
+   "fetched": 1795229523,
+   "count": 129
   },
   {
    "name": "논산시",
    "file": "논산시.json",
-   "fetched": 1795223342,
+   "fetched": 1795229527,
    "count": 134
   },
   {
    "name": "계룡시",
    "file": "계룡시.json",
-   "fetched": 1795223346,
-   "count": 133
+   "fetched": 1795229530,
+   "count": 134
   },
   {
    "name": "당진시",
    "file": "당진시.json",
-   "fetched": 1795223349,
-   "count": 170
+   "fetched": 1795229534,
+   "count": 158
   },
   {
    "name": "중소벤처기업진흥공단",
    "file": "중소벤처기업진흥공단.json",
-   "fetched": 1795223353,
+   "fetched": 1795229537,
    "count": 150
   },
   {
    "name": "소상공인시장진흥공단",
    "file": "소상공인시장진흥공단.json",
-   "fetched": 1795223356,
-   "count": 167
+   "fetched": 1795229540,
+   "count": 168
   },
   {
    "name": "대전충남지방중소벤처기업청",
    "file": "대전충남지방중소벤처기업청.json",
-   "fetched": 1795223360,
-   "count": 50
+   "fetched": 1795229544,
+   "count": 47
   },
   {
    "name": "충남신용보증재단",
    "file": "충남신용보증재단.json",
-   "fetched": 1795223363,
-   "count": 133
+   "fetched": 1795229547,
+   "count": 118
   },
   {
    "name": "충남테크노파크",
    "file": "충남테크노파크.json",
-   "fetched": 1795223367,
-   "count": 94
+   "fetched": 1795229551,
+   "count": 72
   },
   {
    "name": "충남경제진흥원",
    "file": "충남경제진흥원.json",
-   "fetched": 1795223370,
-   "count": 109
+   "fetched": 1795229554,
+   "count": 97
   },
   {
    "name": "충남창조경제혁신센터",
    "file": "충남창조경제혁신센터.json",
-   "fetched": 1795223374,
+   "fetched": 1795229558,
    "count": 56
   },
   {
    "name": "충남연구원",
    "file": "충남연구원.json",
-   "fetched": 1795223377,
-   "count": 126
+   "fetched": 1795229561,
+   "count": 114
   },
   {
    "name": "천안상공회의소",
    "file": "천안상공회의소.json",
-   "fetched": 1795223381,
-   "count": 71
+   "fetched": 1795229565,
+   "count": 66
   },
   {
    "name": "충남북부상공회의소",
    "file": "충남북부상공회의소.json",
-   "fetched": 1795223384,
-   "count": 24
+   "fetched": 1795229568,
+   "count": 25
   },
   {
    "name": "충남문화관광재단",
    "file": "충남문화관광재단.json",
-   "fetched": 1795223388,
-   "count": 105
+   "fetched": 1795229571,
+   "count": 104
   }
  ]
 }
